@@ -1,0 +1,7 @@
+строка 1
+строка 2
+строка 3
+New str1
+New str2
+New str1New str2New str1New str2New str1
+New str2

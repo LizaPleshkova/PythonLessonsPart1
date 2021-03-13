@@ -1,0 +1,195 @@
+# def get_square(num):
+#     return num**2
+#
+# print(get_square(5))
+
+# get_square = lambda num: num**2 # сохраняем в переменную\не предпочтительноо
+# print(get_square(10))
+
+# print((lambda num: num**2)(10))
+
+
+l = [1,2,3]
+
+# def get_double(lis):
+#     return [i for i in lis]
+
+
+def get_double(lis):
+    return list(map((lambda i: i*2), l))
+
+print(get_double(l))
+
+#
+# tw = lambda num: num*2
+# # output = [tw(i) for i in l]
+# output = [(lambda i: i*2)(i) for i in l]
+#
+# print(output)
+
+
+44
+
+
+
+
+
+# Регулярные выражения
+import re
+
+# s = 'Это просто строка. И еще какая-то строка новая нового предложения.'
+# pattern = 'строка'
+#
+# # print(pattern in s)# True
+#
+# # if re.search(pattern,s):#если шаблон соответсвтует строе
+# #     print('Matched')
+# # else:
+# #     print('No matched')
+# #
+# # match = re.search(pattern,s)
+# # print(match)#<_sre.SRE_Match object; span=(11, 17), match='строка'>
+# # print(match.span())#(11, 17)
+# # print(match.start())#11
+# # print(match.end())#17
+#
+#
+# print(re.match(pattern,s))# регистрозависимый
+# print(re.findall(pattern, s))#возвращает список всех гайденных совпадений во всей строке
+# print(re.split('\.', s))#['Это просто строка', ' И еще какая-то строка новая нового предложения', '']
+# # print(re.split(r'\.', s, 1))
+
+
+# s = '''Это просто строка текста.
+# А это ещё одна строка текста.
+# А это строка с цифрами: 1, 2, 3, 4, 5, 6, 7, 8, 9, ٣, 0, 10
+# А это строка с разными символами: "!", "@", "-", "&", "?", "_"
+# a\\b\tc
+# test string'''
+
+# с якорными метасимволами
+# pattern = r'\w+'
+# pattern = r'[эт]+'
+# pattern = r'[а-яА-Яё]+'
+# pattern = r'[0-9]+'
+# pattern = r'\d+'
+# pattern = r'[\d-]+'
+# pattern = r'a\\b\tc'
+# pattern = r'\w+$'
+# pattern = r'^\w+'
+
+# s = 'dfsdf sfsdf mail@mail.com'
+#
+# print(re.findall(pattern,s, flags=re.IGNORECASE))#flags=re.IGNORECASE - без учета регистра
+
+
+# mail@mail.com
+# kudlay@bank
+# mail@google.com.ua
+def validate_email(email):
+    return re.match(r'^.+@\w+\.[a-z]{2,6}$', email,re.IGNORECASE )
+
+# def validate_email(email):
+#     return re.match(r'^.+@(\w+\.){0,2}[a-z]{2,6}$', email, re.IGNORECASE)
+#
+#
+print(validate_email('mail@mail.com'))
+print(validate_email('ivanov@bank'))
+print(validate_email('mail@google.com.ua'))
+print(validate_email('mail@google.com.infotest'))
+
+
+
+# def hello():
+#     return "Hrllo, I'm funct 'heloo'"
+#
+# def super_func(func):
+#     print("Hrllo, I'm funct 'super_func'")
+#     print(func())
+#
+# super_func(hello)# не вызываем, а передаем в качестве аргумента
+
+
+# def hello():
+#     return "Hrllo, I'm funct 'heloo'"
+#
+# test = hello
+# print(test())
+
+#
+# def my_decorator(func):
+#     def func_wrapper():#функция обертка
+#         '''
+#         необходимо не сделать\отработать, а вызвать по необходимости
+#         '''
+#         print('Code before')
+#         func()
+#         print('Code after')
+#     return func_wrapper
+#
+#
+# @my_decorator
+# def func_test():
+#     print('Hello , I am func  "func_test"')
+#
+# # test = my_decorator(func_test)
+# # test()
+#
+# func_test()
+
+
+def make_title(func):
+    def wrapped():
+        title = func() # ожидаем строку от функции func
+        title = title.capitalize()
+        title = title.replace(',', '')
+        return title
+    return wrapped
+
+@make_title
+def hi():
+    return 'hello, world'
+
+print(hi())
+
+
+
+
+from bs4 import BeautifulSoup
+import urllib.request
+
+'''
+рекоендуется делать в виде функций
+1. сделать запрос = urllib.request.urlopen()
+2. прочтем содержимое нашего ответа = req.read()
+'''
+req = urllib.request.urlopen('https://www.ua-football.com/sport')
+html = req.read()
+
+soup = BeautifulSoup(html, 'html.parser') # получаем читабельный html-код
+# print(soup)
+news = soup.find_all('li', class_='liga-news-item')
+# print(news)
+
+results = []# хранение результата данных (список словарей)
+
+for item in news:
+    title = item.find('span', class_="fz-16 fw-500 d-block").get_text(strip=True)#возвращаем строку и только текст между тегами
+    # print(title)
+    desc = item.find('span', class_="name-dop").get_text(strip=True)
+    # print(desc)
+    href = item.a.get('href')# можем указывать теги - сейчас ткг а - и у данного тега нам нужен href
+    # print(href)
+    results.append({
+        'title': title,
+        'desc': desc,
+        'href': href,
+    })
+print(results)
+
+f = open('news.txt', 'w', encoding='utf-8')
+i = 1
+for item in results:
+    f.write(f'Новость {i}\n\nНазвание: {item["title"]}\nОписание: {item["desc"]}\nСсылка: {item["href"]}\n\n**********************\n\n')
+    i+=1
+f.close()
